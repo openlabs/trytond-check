@@ -1,0 +1,9 @@
+<data>
+    <xpath expr="/form/notebook/page[@id='general']/field[@name='update_posted']" position="after">
+        <newline />
+        <label name="enable_check_printing" />
+        <field name="enable_check_printing" />
+        <label name="check_number_sequence" />
+        <field name="check_number_sequence" />
+    </xpath>
+</data>
