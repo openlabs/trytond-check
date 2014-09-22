@@ -1,0 +1,9 @@
+<data>
+    <xpath expr="/form/field[@name='description']" position="after">
+        <label name="check_number" />
+        <field name="check_number" />
+        <button string="Assign Check Number" name="assign_check_number" icon="tryton-ok" colspan="2" />
+        <label name="check_template" />
+        <field name="check_template" />
+    </xpath>
+</data>
