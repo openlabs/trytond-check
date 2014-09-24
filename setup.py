@@ -84,7 +84,7 @@ requires = []
 
 MODULE2PREFIX = {}
 
-MODULE = "check"
+MODULE = "account_check"
 PREFIX = "openlabs"
 for dep in info.get('depends', []):
     if not re.match(r'(ir|res|webdav)(\W|$)', dep):
