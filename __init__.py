@@ -14,9 +14,9 @@ def register():
     Pool.register(
         AccountJournal,
         AccountMove,
-        module='check', type_='model'
+        module='account_check', type_='model'
     )
     Pool.register(
         Check,
-        module='check', type_='report'
+        module='account_check', type_='report'
     )
