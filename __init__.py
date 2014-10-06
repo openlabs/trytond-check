@@ -7,16 +7,23 @@
 """
 from trytond.pool import Pool
 from account import AccountJournal, AccountMove
-from check import Check
+from check import Check, CheckPrinting, CheckPrintingWizard, \
+    CheckPrintingWizardStart
 
 
 def register():
     Pool.register(
         AccountJournal,
         AccountMove,
+        CheckPrintingWizardStart,
         module='account_check', type_='model'
     )
     Pool.register(
         Check,
+        CheckPrinting,
         module='account_check', type_='report'
+    )
+    Pool.register(
+        CheckPrintingWizard,
+        module='account_check', type_='wizard'
     )
