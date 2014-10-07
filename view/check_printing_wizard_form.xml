@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<form string="Print Checks" col="4">
+    <label name="next_number" />
+    <field name="next_number" colspan="2" />
+    <newline />
+    <label name="journal" />
+    <field name="journal" colspan="2" />
+    <newline />
+    <label name="no_of_checks" />
+    <field name="no_of_checks" colspan="2" />
+</form>

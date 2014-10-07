@@ -30,6 +30,14 @@ class AccountJournal:
             },
         )
     )
+    check_template = fields.Many2One(
+        'ir.action.report', 'Check Template', domain=[
+            ('model', '=', 'account.move'),
+        ], states={
+            'invisible': ~Eval('enable_check_printing', True),
+            'required': Eval('enable_check_printing', False)
+        }, depends=['enable_check_printing']
+    )
 
     @staticmethod
     def default_enable_check_printing():
@@ -70,14 +78,6 @@ class AccountMove:
             'invisible': ~Eval('enable_check_printing', True),
         }, depends=['enable_check_printing']
     )
-    check_template = fields.Many2One(
-        'ir.action.report', 'Check Template', domain=[
-            ('model', '=', 'account.move'),
-        ], states={
-            'invisible': ~Eval('enable_check_printing', True),
-            'required': Eval('enable_check_printing', False)
-        },
-    )
 
     @classmethod
     def __setup__(cls):
@@ -87,6 +87,14 @@ class AccountMove:
                 'invisible': ~Eval('enable_check_printing', True),
             }
         })
+
+    @classmethod
+    def validate(cls, moves):
+        """
+        Validate
+        """
+        super(AccountMove, cls).validate(moves)
+        cls.check_move_credit_line(moves)
 
     def get_enable_check_printing(self, name):
         """
@@ -118,3 +126,32 @@ class AccountMove:
                 cls.raise_user_error(
                     "No Sequence defined for Check Number on Journal"
                 )
+
+    @classmethod
+    def check_move_credit_line(cls, moves):
+        """
+        Validate for all moves if there is only one line with
+        Journal's default Credit Account
+        """
+        for move in moves:
+            if not move.enable_check_printing:
+                continue
+            move.check_credit_line()
+
+    def check_credit_line(self):
+        """
+        Validate if there is only one line with Journal's
+        default Credit Account
+        """
+        if (
+            len(
+                filter(
+                    lambda l: l.account == self.journal.credit_account,
+                    self.lines
+                )
+            ) > 1
+        ):
+            self.raise_user_error(
+                "There can be only 1 line with Journal's default " +
+                "Credit Account."
+            )
