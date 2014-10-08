@@ -76,7 +76,16 @@ class AccountMove:
     check_number = fields.Char(
         'Check Number', states={
             'invisible': ~Eval('enable_check_printing', True),
+            'readonly': Eval('state') == 'posted',
         }, depends=['enable_check_printing']
+    )
+    check_debit_lines = fields.Function(
+        fields.One2Many('account.move.line', None, 'Check Debit Lines'),
+        'get_check_lines'
+    )
+    check_credit_lines = fields.Function(
+        fields.One2Many('account.move.line', None, 'Check Credit Lines'),
+        'get_check_lines'
     )
 
     @classmethod
@@ -94,7 +103,7 @@ class AccountMove:
         Validate
         """
         super(AccountMove, cls).validate(moves)
-        cls.check_move_credit_line(moves)
+        cls.check_move_lines(moves)
 
     def get_enable_check_printing(self, name):
         """
@@ -128,30 +137,58 @@ class AccountMove:
                 )
 
     @classmethod
-    def check_move_credit_line(cls, moves):
+    def check_move_lines(cls, moves):
         """
-        Validate for all moves if there is only one line with
-        Journal's default Credit Account
+        Check if there is only 1 debit and 1 credit line
         """
         for move in moves:
             if not move.enable_check_printing:
                 continue
             move.check_credit_line()
+            move.check_debit_line()
 
     def check_credit_line(self):
         """
-        Validate if there is only one line with Journal's
+        Validate if there is only one credit line with Journal's
         default Credit Account
         """
         if (
             len(
                 filter(
-                    lambda l: l.account == self.journal.credit_account,
+                    lambda l: (
+                        (l.account == self.journal.credit_account) and l.credit
+                    ),
                     self.lines
                 )
-            ) > 1
+            ) != 1
         ):
             self.raise_user_error(
-                "There can be only 1 line with Journal's default " +
+                "There can be only 1 credit line with Journal's default " +
                 "Credit Account."
             )
+
+    def check_debit_line(self):
+        """
+        Validate if there is only one debit line
+        """
+        if len(filter(lambda l: l.debit, self.lines)) != 1:
+            self.raise_user_error(
+                "There can be only 1 Debit Line."
+            )
+        elif len(filter(lambda l: l.debit and l.party, self.lines)) != 1:
+            self.raise_user_error(
+                "There must be a Party defined on the Debit Line."
+            )
+
+    def get_check_lines(self, name):
+        """
+        Returns the credit and debit lines for checks
+        """
+        if not self.enable_check_printing:
+            return None
+
+        if name == 'check_debit_lines':
+            return map(int, filter(lambda l: l.debit, self.lines))
+        elif name == 'check_credit_lines':
+            return map(int, filter(lambda l: l.credit, self.lines))
+        return None

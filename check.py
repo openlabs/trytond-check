@@ -5,6 +5,8 @@
     :copyright: (c) 2014 by Openlabs Technologies & Consulting (P) Limited
     :license: BSD, see LICENSE for more details.
 """
+from num2words import num2words
+
 from trytond.report import Report
 from trytond.exceptions import UserError
 from trytond.pool import Pool
@@ -41,6 +43,15 @@ class Check(Report):
             raise UserError(
                 "Check Number not valid."
             )
+        if not move.state == 'posted':
+            raise UserError(
+                "You must Post the move before printing check."
+            )
+
+        localcontext.update({
+            'num2words': lambda *args, **kargs: num2words(
+                *args, **kargs)
+        })
 
         # Use Account Move's check template
         report = move.journal.check_template
@@ -59,6 +70,11 @@ class CheckPrinting(Report):
     def parse(cls, report, records, data, localcontext):
         AccountMove = Pool().get('account.move')
         AccountJournal = Pool().get('account.journal')
+
+        localcontext.update({
+            'num2words': lambda *args, **kargs: num2words(
+                *args, **kargs)
+        })
 
         records = [AccountMove(m) for m in data['moves']]
         report = AccountJournal(data['journal']).check_template
@@ -107,6 +123,11 @@ class CheckPrintingWizard(Wizard):
         if filter(lambda m: m.check_number, moves):
             self.raise_user_error(
                 'One or more selected moves have check number assigned to them.'
+            )
+
+        if filter(lambda m: m.state != 'posted', moves):
+            self.raise_user_error(
+                'One or more selected moves are not Posted yet.'
             )
 
         if len(journals) > 1:
