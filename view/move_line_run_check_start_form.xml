@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<form string="Run Checks" col="4">
+    <label name="journal" />
+    <field name="journal" colspan="2" />
+    <newline />
+    <label name="next_number" />
+    <field name="next_number" />
+</form>
