@@ -96,6 +96,8 @@ class AccountMove:
                 'invisible': ~Eval('enable_check_printing', True),
             }
         })
+        if 'check_number' not in cls._check_modify_exclude:
+            cls._check_modify_exclude.append('check_number')
 
     @classmethod
     def validate(cls, moves):
@@ -110,7 +112,14 @@ class AccountMove:
         Return True if Journal type is Cash and check printing is
         enabled for that Journal
         """
-        return self.journal.enable_check_printing
+        if self.journal:
+            return self.journal.enable_check_printing
+
+    @fields.depends('journal')
+    def on_change_journal(self):
+        return {
+            'enable_check_printing': self.get_enable_check_printing(None),
+        }
 
     @classmethod
     @ModelView.button
@@ -160,7 +169,7 @@ class AccountMove:
                     ),
                     self.lines
                 )
-            ) != 1
+            ) > 1
         ):
             self.raise_user_error(
                 "There can be only 1 credit line with Journal's default " +
@@ -171,11 +180,15 @@ class AccountMove:
         """
         Validate if there is only one debit line
         """
-        if len(filter(lambda l: l.debit, self.lines)) != 1:
+        debit_lines = filter(lambda l: l.debit, self.lines)
+        if not debit_lines:
+            return
+
+        if len(debit_lines) > 1:
             self.raise_user_error(
                 "There can be only 1 Debit Line."
             )
-        elif len(filter(lambda l: l.debit and l.party, self.lines)) != 1:
+        elif not debit_lines[0].party:
             self.raise_user_error(
                 "There must be a Party defined on the Debit Line."
             )
