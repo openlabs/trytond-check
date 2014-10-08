@@ -6,6 +6,7 @@
     :license: BSD, see LICENSE for more details.
 """
 from num2words import num2words
+from itertools import groupby
 
 from trytond.report import Report
 from trytond.exceptions import UserError
@@ -13,10 +14,12 @@ from trytond.pool import Pool
 from trytond.transaction import Transaction
 from trytond.model import fields, ModelView
 from trytond.wizard import Wizard, StateAction, StateView, Button
+from trytond.pyson import PYSONEncoder
 
 
 __all__ = [
-    'Check', 'CheckPrinting', 'CheckPrintingWizard', 'CheckPrintingWizardStart'
+    'Check', 'CheckPrinting', 'CheckPrintingWizard', 'CheckPrintingWizardStart',
+    'RunCheck', 'RunCheckStart'
 ]
 
 
@@ -168,3 +171,116 @@ class CheckPrintingWizard(Wizard):
 
     def transition_generate(self):
         return 'end'
+
+
+class RunCheckStart(ModelView):
+    'Run Check'
+    __name__ = 'account.move.line.run_check.start'
+    journal = fields.Many2One(
+        'account.journal', 'Journal', required=True, domain=[
+            ('enable_check_printing', '=', True)
+        ]
+    )
+    next_number = fields.Integer('Next Number', readonly=True)
+    moves = fields.One2Many(
+        'account.move', None, 'Moves', readonly=True
+    )
+
+    @fields.depends('journal')
+    def on_change_journal(self):
+        if self.journal:
+            return {
+                'next_number': self.journal.check_number_sequence.number_next
+            }
+        return {'next_number': None}
+
+
+class RunCheck(Wizard):
+    'Run checks for the given lines'
+    __name__ = 'account.move.line.run_check'
+
+    start = StateView(
+        'account.move.line.run_check.start',
+        'account_check.move_line_run_check_start_view_form', [
+            Button('Cancel', 'end', 'tryton-cancel'),
+            Button('Pay', 'pay', 'tryton-ok', default=True),
+        ]
+    )
+    pay = StateAction('account_check.account_move_check_printing')
+    summary = StateAction('account.act_move_form')
+
+    def get_move(self, lines, party, account):
+        Move = Pool().get('account.move')
+        Line = Pool().get('account.move.line')
+
+        total_debit = sum(line.debit for line in lines)
+        total_credit = sum(line.credit for line in lines)
+        payment_amount = total_credit - total_debit
+
+        return Move(
+            journal=self.start.journal,
+            lines=[
+                # Credit the journal
+                Line(
+                    account=self.start.journal.credit_account,
+                    credit=payment_amount,
+                ),
+                # Debit the payable account
+                Line(
+                    account=account,
+                    debit=payment_amount,
+                    party=party,
+                )
+            ]
+        )
+
+    def do_pay(self, action):
+        Line = Pool().get('account.move.line')
+        Move = Pool().get('account.move')
+
+        sort_key = lambda line: (line.party, line.account)
+
+        # Sorted by party after removing lines without party
+        move_lines = sorted(
+            filter(
+                lambda line: line.party,
+                Line.browse(Transaction().context['active_ids'])
+            ),
+            key=sort_key
+        )
+
+        moves = []
+        for party_account, lines in groupby(move_lines, key=sort_key):
+            lines = list(lines)
+            move = self.get_move(lines, *party_account)
+            move.save()
+            moves.append(move)
+
+            # Reconcile the lines
+            Line.reconcile(
+                lines + [line for line in move.lines if line.party]
+            )
+
+        move_ids = map(int, moves)
+
+        self.start.moves = moves
+        # Post all the moves
+        Move.post(moves)
+        # Assign Check Number to all moves
+        Move.assign_check_number(moves)
+
+        data = {
+            'moves': move_ids,
+            'journal': self.start.journal.id,
+        }
+        return action, data
+
+    def transition_pay(self):
+        return 'summary'
+
+    def do_summary(self, action):
+        action['pyson_domain'] = PYSONEncoder().encode(
+            [('id', 'in', map(int, self.start.moves))]
+        )
+        action['name'] = "Moves for Created Checks"
+        return action, {}

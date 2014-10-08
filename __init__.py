@@ -8,7 +8,7 @@
 from trytond.pool import Pool
 from account import AccountJournal, AccountMove
 from check import Check, CheckPrinting, CheckPrintingWizard, \
-    CheckPrintingWizardStart
+    CheckPrintingWizardStart, RunCheck, RunCheckStart
 
 
 def register():
@@ -16,6 +16,7 @@ def register():
         AccountJournal,
         AccountMove,
         CheckPrintingWizardStart,
+        RunCheckStart,
         module='account_check', type_='model'
     )
     Pool.register(
@@ -25,5 +26,6 @@ def register():
     )
     Pool.register(
         CheckPrintingWizard,
+        RunCheck,
         module='account_check', type_='wizard'
     )
