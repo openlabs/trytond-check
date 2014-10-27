@@ -11,7 +11,7 @@ from trytond.pyson import Eval
 
 
 __metaclass__ = PoolMeta
-__all__ = ['AccountJournal', 'AccountMove']
+__all__ = ['AccountJournal', 'AccountMove', 'AccountMoveLine']
 
 
 class AccountJournal:
@@ -205,3 +205,22 @@ class AccountMove:
         elif name == 'check_credit_lines':
             return map(int, filter(lambda l: l.credit, self.lines))
         return None
+
+
+class AccountMoveLine:
+    'Account Move Line'
+    __name__ = 'account.move.line'
+
+    def origin_details(self):
+        """
+        Returns the origin as a string to print on checks
+        """
+        Model = Pool().get('ir.model')
+
+        if not self.origin:
+            return None
+
+        model, = Model.search([
+            ('model', '=', self.origin.__name__)
+        ])
+        return "%s, %s" % (model.name, self.origin.rec_name)

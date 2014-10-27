@@ -7,6 +7,7 @@
 """
 from num2words import num2words
 from itertools import groupby
+from decimal import Decimal
 
 from trytond.report import Report
 from trytond.exceptions import UserError
@@ -23,7 +24,45 @@ __all__ = [
 ]
 
 
-class Check(Report):
+class ReportMixin(Report):
+    """
+    Mixin Class for reports
+    """
+
+    @classmethod
+    def amount_to_words(cls, amount, length=100):
+        """
+        Returns amount in words to print on checks
+
+        :param amount: Amount to convert into words
+        :param length: Length of returned string
+        """
+        if not amount:
+            return None
+
+        amount_in_words = num2words(int(amount)).replace(' and ', ' ').title()
+
+        if amount - int(amount):
+            amount_in_words += " and %d/100" % (Decimal(str(amount)) % 1 * 100)
+
+        return ('{:*<%d}' % length).format(amount_in_words)
+
+    @classmethod
+    def parse(cls, report, records, data, localcontext):
+        """
+        Add amount_to_words to localcontext
+        """
+        localcontext.update({
+            'amount_to_words': lambda *args, **kargs: cls.amount_to_words(
+                *args, **kargs)
+        })
+
+        return super(ReportMixin, cls).parse(
+            report, records, data, localcontext
+        )
+
+
+class Check(ReportMixin):
     'Print Checks'
     __name__ = 'account.move.check'
 
@@ -51,11 +90,6 @@ class Check(Report):
                 "You must Post the move before printing check."
             )
 
-        localcontext.update({
-            'num2words': lambda *args, **kargs: num2words(
-                *args, **kargs)
-        })
-
         # Use Account Move's check template
         report = move.journal.check_template
         return super(Check, cls).parse(
@@ -63,7 +97,7 @@ class Check(Report):
         )
 
 
-class CheckPrinting(Report):
+class CheckPrinting(ReportMixin):
     """
     Check Printing
     """
@@ -73,11 +107,6 @@ class CheckPrinting(Report):
     def parse(cls, report, records, data, localcontext):
         AccountMove = Pool().get('account.move')
         AccountJournal = Pool().get('account.journal')
-
-        localcontext.update({
-            'num2words': lambda *args, **kargs: num2words(
-                *args, **kargs)
-        })
 
         records = [AccountMove(m) for m in data['moves']]
         report = AccountJournal(data['journal']).check_template

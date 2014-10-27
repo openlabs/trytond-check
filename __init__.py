@@ -6,7 +6,7 @@
     :license: BSD, see LICENSE for more details.
 """
 from trytond.pool import Pool
-from account import AccountJournal, AccountMove
+from account import AccountJournal, AccountMove, AccountMoveLine
 from check import Check, CheckPrinting, CheckPrintingWizard, \
     CheckPrintingWizardStart, RunCheck, RunCheckStart
 
@@ -17,6 +17,7 @@ def register():
         AccountMove,
         CheckPrintingWizardStart,
         RunCheckStart,
+        AccountMoveLine,
         module='account_check', type_='model'
     )
     Pool.register(
