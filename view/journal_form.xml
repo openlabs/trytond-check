@@ -5,5 +5,7 @@
         <field name="enable_check_printing" />
         <label name="check_number_sequence" />
         <field name="check_number_sequence" />
+        <label name="check_template" />
+        <field name="check_template" />
     </xpath>
 </data>

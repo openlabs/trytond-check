@@ -2,15 +2,49 @@
 <tryton>
     <data>
         <record model="ir.action.report" id="check_report">
-            <field name="name">Check</field>
+            <field name="name">Re-Print Check</field>
             <field name="model">account.move</field>
             <field name="report_name">account.move.check</field>
-            <field name="report">check/reports/check.odt</field>
+            <field name="report">account_check/reports/check.odt</field>
         </record>
         <record model="ir.action.keyword" id="keyword_check_report">
             <field name="keyword">form_print</field>
             <field name="model">account.move,-1</field>
             <field name="action" ref="check_report"/>
+        </record>
+        <record model="ir.action.report" id="account_move_check_printing">
+            <field name="name">Checks</field>
+            <field name="model">account.move</field>
+            <field name="report_name">account.move.check_printing</field>
+            <field name="report">account_check/reports/check.odt</field>
+        </record>
+        <record model="ir.ui.view" id="check_printing_wizard_view_form">
+            <field name="model">account.move.check_printing_wizard.start</field>
+            <field name="type">form</field>
+            <field name="name">check_printing_wizard_form</field>
+        </record>
+        <record model="ir.action.wizard" id="wizard_check_printing">
+            <field name="name">Print Checks</field>
+            <field name="wiz_name">account.move.check_printing_wizard</field>
+        </record>
+        <record model="ir.action.keyword" id="keyword_check_printing_wizard">
+            <field name="keyword">form_action</field>
+            <field name="model">account.move,-1</field>
+            <field name="action" ref="wizard_check_printing"/>
+        </record>
+        <record model="ir.ui.view" id="move_line_run_check_start_view_form">
+            <field name="model">account.move.line.run_check.start</field>
+            <field name="type">form</field>
+            <field name="name">move_line_run_check_start_form</field>
+        </record>
+        <record model="ir.action.wizard" id="wizard_run_checks">
+            <field name="name">Run Checks</field>
+            <field name="wiz_name">account.move.line.run_check</field>
+        </record>
+        <record model="ir.action.keyword" id="keyword_run_checks_wizard">
+            <field name="keyword">form_action</field>
+            <field name="model">account.move.line,-1</field>
+            <field name="action" ref="wizard_run_checks"/>
         </record>
     </data>
 </tryton>
