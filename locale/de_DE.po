@@ -1,0 +1,127 @@
+# 
+msgid ""
+msgstr "Content-Type: text/plain; charset=utf-8\n"
+
+msgctxt "field:account.journal,check_number_sequence:"
+msgid "Check Number Sequence"
+msgstr "Nummernkreis Scheck"
+
+msgctxt "field:account.journal,check_template:"
+msgid "Check Template"
+msgstr "Scheck Vorlage"
+
+msgctxt "field:account.journal,enable_check_printing:"
+msgid "Enable Check Printing"
+msgstr "Scheckdruck aktivieren"
+
+msgctxt "field:account.move,check_credit_lines:"
+msgid "Check Credit Lines"
+msgstr "Scheckpositionen Haben"
+
+msgctxt "field:account.move,check_debit_lines:"
+msgid "Check Debit Lines"
+msgstr "Scheckpositionen Soll"
+
+msgctxt "field:account.move,check_number:"
+msgid "Check Number"
+msgstr "Schecknummer"
+
+msgctxt "field:account.move,enable_check_printing:"
+msgid "Enable Check Printing"
+msgstr "Scheckdruck aktivieren"
+
+msgctxt "field:account.move.check_printing_wizard.start,id:"
+msgid "ID"
+msgstr "ID"
+
+msgctxt "field:account.move.check_printing_wizard.start,journal:"
+msgid "Journal"
+msgstr "Journal"
+
+msgctxt "field:account.move.check_printing_wizard.start,next_number:"
+msgid "Next Number"
+msgstr "Nächste Zahl"
+
+msgctxt "field:account.move.check_printing_wizard.start,no_of_checks:"
+msgid "Number of Checks"
+msgstr "Anzahl an Schecks"
+
+msgctxt "field:account.move.line.run_check.start,id:"
+msgid "ID"
+msgstr "ID"
+
+msgctxt "field:account.move.line.run_check.start,journal:"
+msgid "Journal"
+msgstr "Journal"
+
+msgctxt "field:account.move.line.run_check.start,moves:"
+msgid "Moves"
+msgstr "Lagerbewegungen"
+
+msgctxt "field:account.move.line.run_check.start,next_number:"
+msgid "Next Number"
+msgstr "Nächste Zahl"
+
+msgctxt "model:account.move.check_printing_wizard.start,name:"
+msgid "Check Printing Wizard"
+msgstr "Assitent Scheckdruck"
+
+msgctxt "model:account.move.line.run_check.start,name:"
+msgid "Run Check"
+msgstr "Scheck verarbeiten"
+
+msgctxt "model:ir.action,name:account_move_check_printing"
+msgid "Checks"
+msgstr "Schecks"
+
+msgctxt "model:ir.action,name:check_report"
+msgid "Check"
+msgstr "Scheck"
+
+msgctxt "model:ir.action,name:wizard_check_printing"
+msgid "Print Checks"
+msgstr "Schecks drucken"
+
+msgctxt "model:ir.action,name:wizard_run_checks"
+msgid "Run Checks"
+msgstr "Schecks verarbeiten"
+
+msgctxt "model:ir.sequence,name:sequence_check_number"
+msgid "Check Number"
+msgstr "Schecknummer"
+
+msgctxt "odt:account.move.check:"
+msgid "Scheck"
+msgstr "Scheck"
+
+msgctxt "odt:account.move.check_printing:"
+msgid "Scheck"
+msgstr "Scheck"
+
+msgctxt "view:account.move.check_printing_wizard.start:"
+msgid "Print Checks"
+msgstr "Schecks drucken"
+
+msgctxt "view:account.move.line.run_check.start:"
+msgid "Run Checks"
+msgstr "Schecks verarbeiten"
+
+msgctxt "view:account.move:"
+msgid "Assign Check Number"
+msgstr "Schecknummer zuweisen"
+
+msgctxt "wizard_button:account.move.check_printing_wizard,start,end:"
+msgid "Cancel"
+msgstr "Abbrechen"
+
+msgctxt "wizard_button:account.move.check_printing_wizard,start,generate:"
+msgid "Print"
+msgstr "Drucken"
+
+msgctxt "wizard_button:account.move.line.run_check,start,end:"
+msgid "Cancel"
+msgstr "Abbrechen"
+
+msgctxt "wizard_button:account.move.line.run_check,start,pay:"
+msgid "Pay"
+msgstr "Zahlen"
