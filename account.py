@@ -211,6 +211,11 @@ class AccountMoveLine:
     'Account Move Line'
     __name__ = 'account.move.line'
 
+    check_number = fields.Function(
+        fields.Char('Check Number'), 'get_check_number',
+        searcher='search_check_number'
+    )
+
     def origin_details(self):
         """
         Returns the origin as a string to print on checks
@@ -224,3 +229,13 @@ class AccountMoveLine:
             ('model', '=', self.origin.__name__)
         ])
         return "%s, %s" % (model.name, self.origin.rec_name)
+
+    def get_check_number(self, name):
+        """
+        Return the check number of the current line's move
+        """
+        return self.move.check_number or None
+
+    @classmethod
+    def search_check_number(cls, name, clause):
+        return [('move.check_number',) + tuple(clause[1:])]
