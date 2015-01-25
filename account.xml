@@ -20,5 +20,15 @@
                 search="[('model.model', '=', 'account.journal'), ('name', '=', 'check_number_sequence')]"/>
             <field name="value" eval="'ir.sequence,' + str(ref('sequence_check_number'))"/>
         </record>
+        <record model="ir.ui.view" id="move_line_view_tree">
+            <field name="model">account.move.line</field>
+            <field name="inherit" ref="account.move_line_view_tree" />
+            <field name="name">move_line_tree</field>
+        </record>
+        <record model="ir.ui.view" id="move_line_view_list">
+            <field name="model">account.move.line</field>
+            <field name="inherit" ref="account_payment.move_line_view_list" />
+            <field name="name">move_line_list</field>
+        </record>
     </data>
 </tryton>
