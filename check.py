@@ -241,6 +241,7 @@ class RunCheck(Wizard):
     def get_move(self, lines, party, account):
         Move = Pool().get('account.move')
         Line = Pool().get('account.move.line')
+        Date = Pool().get('ir.date')
 
         total_debit = sum(line.debit for line in lines)
         total_credit = sum(line.credit for line in lines)
@@ -248,6 +249,7 @@ class RunCheck(Wizard):
 
         return Move(
             journal=self.start.journal,
+            date=Date.today(),
             lines=[
                 # Credit the journal
                 Line(
