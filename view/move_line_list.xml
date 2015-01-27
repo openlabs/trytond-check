@@ -1,0 +1,5 @@
+<data>
+    <xpath expr="/tree/field[@name='description']" position="after" >
+        <field name="check_number" />
+    </xpath>
+</data>
