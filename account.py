@@ -222,7 +222,7 @@ class AccountMoveLine:
         """
         Model = Pool().get('ir.model')
 
-        if not self.origin:
+        if not self.origin or self.origin.id == -1:
             return None
 
         model, = Model.search([
